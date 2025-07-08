@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+sqlmodel
+psycopg2-binary
+python-dotenv
+passlib[bcrypt]
+pyjwt
+web3
+celery
+redis
+httpx
+pytest
+pytest-cov
+python-multipart  # for file uploads if needed
