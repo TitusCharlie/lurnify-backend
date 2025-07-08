@@ -65,3 +65,36 @@ def test_create_course_and_add_content():
     contents = res.json()
     assert len(contents) == 1
     assert contents[0]["type"] == "video"
+
+def test_unauthorized_course_creation():
+    course_data = {
+        "title": "Web3 Security",
+        "description": "Learn about smart contract security.",
+        "thumbnail_url": "https://example.com/security.png"
+    }
+    res = client.post("/courses/", json=course_data)
+    assert res.status_code == 401
+
+def test_get_nonexistent_course():
+    res = client.get("/courses/invalid-id")
+    assert res.status_code == 404
+    assert res.json()["detail"] == "Course not found"
+
+def test_content_empty_list():
+    token = get_token()
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Create course
+    course_data = {
+        "title": "Zero Content Course",
+        "description": "Testing empty content.",
+        "thumbnail_url": "https://example.com/none.png"
+    }
+    res = client.post("/courses/", json=course_data, headers=headers)
+    assert res.status_code == 200
+    course_id = res.json()["id"]
+
+    # Fetch contents (should be empty)
+    res = client.get(f"/courses/{course_id}/contents")
+    assert res.status_code == 200
+    assert res.json() == []
