@@ -12,3 +12,7 @@ httpx
 pytest
 pytest-cov
 python-multipart  # for file uploads if needed
+pydantic>=2.0
+pydantic-settings>=2.0
+pydantic[email]
+python-jose[cryptography]
