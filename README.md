@@ -54,3 +54,84 @@ project_root/
 ├── alembic/                 # For DB migrations (optional)
 ├── .env                     # Environment variables
 └── README.md
+
+
+# Lurnify Backend
+
+This is the backend MVP for **Lurnify**, a decentralized learning platform. Built with FastAPI, PostgreSQL, SQLModel, and Web3 authentication.
+
+---
+
+## 🛠️ Tech Stack
+| Component         | Tech                         |
+|------------------|------------------------------|
+| Web Framework    | FastAPI                      |
+| ORM              | SQLModel (SQLAlchemy-based)  |
+| Database         | PostgreSQL                   |
+| Auth             | Web3 JWT + OAuth             |
+| Storage          | IPFS (TBD), AWS/S3 (fallback)|
+| Blockchain       | web3.py                      |
+| Background Tasks | Celery + Redis (TBD)         |
+| Testing          | Pytest                       |
+
+---
+
+## 🔐 Auth Endpoints
+| Method | Endpoint        | Description        |
+|--------|------------------|--------------------|
+| POST   | `/auth/signup`   | Register new user  |
+| POST   | `/auth/login`    | Login (JWT token)  |
+
+Auth uses JWT and supports integration with wallets (Moralis/Auth0).
+
+---
+
+## 📚 Course API
+| Method | Endpoint                             | Description                  |
+|--------|--------------------------------------|------------------------------|
+| POST   | `/courses/`                          | Create a course (auth)       |
+| GET    | `/courses/`                          | List all courses             |
+| GET    | `/courses/{id}`                      | Get course details           |
+| POST   | `/courses/{id}/contents`             | Add content to a course      |
+| GET    | `/courses/{id}/contents`             | List content of a course     |
+
+Each course is linked to content blocks (video, text, quiz, etc).
+
+---
+
+## 🧪 Running Tests
+
+```bash
+pytest tests/
+```
+
+Tests cover:
+- Auth (signup/login)
+- Course creation
+- Content creation
+
+---
+
+## 📁 Project Structure
+```
+app/
+├── api/            # Route handlers
+├── core/           # DB, security, config
+├── models/         # SQLModel ORM models
+├── schemas/        # Pydantic schemas
+├── tasks/          # Background task logic
+├── utils/          # IPFS, helpers (TBD)
+tests/              # Pytest test cases
+```
+
+---
+
+## ✅ MVP Progress
+- [x] JWT Auth (signup/login)
+- [x] Course & Content CRUD
+- [ ] Quiz/Test logic
+- [ ] IPFS Storage Upload
+- [ ] Progress Tracking
+- [ ] Task Queue with Celery
+
+> Want to contribute or extend? Pull requests welcome!

@@ -1,13 +1,20 @@
+# app/core/database.py
 from sqlmodel import SQLModel, create_engine, Session
 from app.core.config import settings
 
-DATABASE_URL = f"postgresql://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}"
+# Use the clean property from config
+engine = create_engine(
+    settings.database_url,
+    echo=settings.DEBUG,
+    pool_pre_ping=True,
+)
 
-engine = create_engine(DATABASE_URL, echo=settings.DEBUG)
-
-def get_session():
+# Dependency-injected DB session
+def get_session() -> Session:
     with Session(engine) as session:
         yield session
 
-def init_db():
+# Initialize tables (called at app startup)
+def init_db() -> None:
+    import app.models  # ensures all models are loaded for metadata
     SQLModel.metadata.create_all(engine)

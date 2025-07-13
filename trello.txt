@@ -1,0 +1,151 @@
+Week-by-Week Breakdown
+Week 1 – Core Setup + Auth
+Goal: Base project bootstrapped + Authentication fully working
+Tasks:
+
+Setup FastAPI project structure
+
+Setup PostgreSQL + SQLModel models
+
+Add Auth (signup/login) with JWT
+
+Integrate OAuth or Wallet Auth (stub)
+
+Write unit tests for auth
+
+📚 Week 2 – Courses & Content
+✅ Goal: Instructors can create courses and content
+Tasks:
+
+Add Course + Content models/schemas/routes
+
+Protect with JWT (only instructors create)
+
+Add tests for all endpoints
+
+Update README with docs so far
+
+🧠 Week 3 – Quizzes & Tests
+✅ Goal: Course content includes assessments
+Tasks:
+
+Add Quiz, Question, Option models
+
+Add APIs for creating/retrieving quizzes
+
+Connect quiz to content blocks
+
+Validate user answers
+
+Write unit tests
+
+📂 Week 4 – IPFS + Media Upload
+✅ Goal: Upload videos/images to IPFS or S3 fallback
+Tasks:
+
+Integrate IPFS pinning API (Web3.Storage or Pinata)
+
+Setup media URL linking in content
+
+Add fallback to Supabase or S3
+
+Test upload and retrieval
+
+📈 Week 5 – Learning Progress Tracking
+✅ Goal: Users can track progress through courses
+Tasks:
+
+Add UserProgress model
+
+Add endpoints to track completed lessons/quiz
+
+Show percentage completion per course
+
+Add tests
+
+🧾 Week 6 – Background Jobs (Video/Quizzes)
+✅ Goal: Offload heavy processing
+Tasks:
+
+Add Celery + Redis
+
+Create background jobs for:
+
+Uploading content
+
+IPFS pinning
+
+Quiz auto-grading
+
+Monitor with Flower (optional)
+
+🎨 Week 7 – Final Integrations + Frontend Handoff
+✅ Goal: API is stable and ready for frontend
+Tasks:
+
+Finalize API docs with Swagger/OpenAPI
+
+Handoff all routes and schemas to frontend team
+
+Validate all request/response payloads
+
+Write cURL/Postman scripts
+
+🚢 Week 8 – Polishing & Deployment
+✅ Goal: Launch-ready MVP backend
+Tasks:
+
+Write deployment Dockerfiles (if needed)
+
+Set up CI/CD pipeline (GitHub Actions or Railway)
+
+Perform load testing (e.g., Locust or JMeter)
+
+Final README polish
+
+Soft launch
+
+#Progress
+not touched anything from Weeks 4 to 8 yet. Here's a breakdown of what’s untouched:
+
+❌ Week 4 – IPFS + Media Upload
+No IPFS integration started
+
+No file upload endpoints
+
+No fallback to AWS/S3 or Supabase Storage yet
+
+❌ Week 5 – Progress Tracking
+No UserProgress model/schema
+
+No API for lesson or quiz completion
+
+No course completion % logic
+
+❌ Week 6 – Background Tasks (Celery)
+No Celery or Redis setup yet
+
+No async video/quiz/background processing
+
+No Flower monitoring
+
+❌ Week 7 – Final Frontend Integration
+No OpenAPI docs polish or cURL/Postman scripts
+
+No formal handoff checklist
+
+❌ Week 8 – CI/CD & Deployment
+No Dockerfile
+
+No Railway/Render setup
+
+No GitHub Actions or unit test pipelines
+
+✅ You're currently at Week 3, with full focus on implementing:
+Quiz, Question, and Answer models
+
+Quiz creation & grading logic
+
+Quiz-to-content linkage
+
+Would you like to start the Quiz backend implementation now?

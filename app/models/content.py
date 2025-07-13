@@ -1,16 +1,17 @@
+# content.py
 from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional
-from datetime import datetime
+from typing import Optional, TYPE_CHECKING
+from datetime import datetime, UTC
 import uuid
-from app.models.course import Course
+
+if TYPE_CHECKING:
+    from app.models.course import Course
 
 class Content(SQLModel, table=True):
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
-    course_id: str = Field(foreign_key="course.id")
-    type: str  # video | text | quiz | etc
     title: str
-    body: Optional[str] = None  # markdown or text
-    media_url: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    body: str
+    course_id: str = Field(foreign_key="course.id")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
-    course: Optional[Course] = Relationship(back_populates="contents")
+    course: Optional["Course"] = Relationship(back_populates="contents")  # ✅ Plain typing

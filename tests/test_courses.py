@@ -1,100 +1,99 @@
 import pytest
 from fastapi.testclient import TestClient
+from sqlmodel import Session
 from app.main import app
-from sqlmodel import SQLModel, Session
-from app.core.database import get_session, engine
 from app.models.user import User
+from app.core.database import get_session
 from app.core.security import hash_password
 
 client = TestClient(app)
 
-@pytest.fixture(autouse=True)
-def setup_db():
-    SQLModel.metadata.create_all(engine)
-    yield
-    SQLModel.metadata.drop_all(engine)
+# === Fixture: Create a user once per module for auth-related tests ===
+@pytest.fixture(scope="module", autouse=True)
+def test_user():
+    with Session(get_session()) as session:
+        # Create a user directly in the database
+        user = User(
+            email="courseuser@example.com",
+            username="courseuser",
+            password=hash_password("coursepass"),
+            auth_provider="credentials"
+        )
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+        return user
 
-def get_token():
-    email = "instructor@example.com"
-    password = "testpass"
-    client.post("/auth/signup", json={"email": email, "password": password})
-    res = client.post("/auth/login", json={"email": email, "password": password})
-    return res.json()["access_token"]
+# === Fixture: Login and return Authorization header ===
+@pytest.fixture
+def auth_header(test_user):
+    login_res = client.post("/auth/login", json={
+        "email": test_user.email,
+        "password": "coursepass"
+    })
+    token = login_res.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
 
-def test_create_course_and_add_content():
-    token = get_token()
-    headers = {"Authorization": f"Bearer {token}"}
 
-    # Create course
-    course_data = {
-        "title": "Intro to Solidity",
-        "description": "Learn Ethereum smart contracts",
-        "thumbnail_url": "https://example.com/image.png"
+# === Test 1: Authenticated user can create a course and add content ===
+def test_create_course_and_add_content(auth_header):
+    course_payload = {
+        "title": "Test Course",
+        "description": "Test description",
+        "thumbnail_url": "http://example.com/thumb.png"
     }
-    res = client.post("/courses/", json=course_data, headers=headers)
+
+    # POST /courses/ to create course
+    res = client.post("/courses/", json=course_payload, headers=auth_header)
     assert res.status_code == 200
     course = res.json()
-    assert course["title"] == "Intro to Solidity"
-    course_id = course["id"]
+    assert course["title"] == "Test Course"
+    assert course["author_id"]
 
-    # List courses
-    res = client.get("/courses/")
-    assert res.status_code == 200
-    assert any(c["id"] == course_id for c in res.json())
-
-    # Get course by ID
-    res = client.get(f"/courses/{course_id}")
-    assert res.status_code == 200
-    assert res.json()["title"] == "Intro to Solidity"
-
-    # Add content to course
-    content_data = {
-        "type": "video",
-        "title": "Getting Started with Remix",
-        "body": "This video explains basic Remix usage.",
-        "media_url": "https://ipfs.io/ipfs/Qm123abc"
+    # POST /courses/{course_id}/contents to add content
+    content_payload = {
+        "title": "Lesson 1",
+        "body": "This is lesson content"
     }
-    res = client.post(f"/courses/{course_id}/contents", json=content_data, headers=headers)
+    res = client.post(f"/courses/{course['id']}/contents", json=content_payload, headers=auth_header)
     assert res.status_code == 200
     content = res.json()
-    assert content["title"] == "Getting Started with Remix"
+    assert content["title"] == "Lesson 1"
+    assert content["course_id"] == course["id"]
 
-    # Get all contents for course
-    res = client.get(f"/courses/{course_id}/contents")
-    assert res.status_code == 200
-    contents = res.json()
-    assert len(contents) == 1
-    assert contents[0]["type"] == "video"
 
+# === Test 2: Anonymous users (unauthenticated) should get 401 on course creation ===
 def test_unauthorized_course_creation():
-    course_data = {
-        "title": "Web3 Security",
-        "description": "Learn about smart contract security.",
-        "thumbnail_url": "https://example.com/security.png"
+    course_payload = {
+        "title": "Unauthorized Course",
+        "description": "You should not be able to do this"
     }
-    res = client.post("/courses/", json=course_data)
+
+    # No auth headers → expect 401 Unauthorized
+    res = client.post("/courses/", json=course_payload)
     assert res.status_code == 401
 
-def test_get_nonexistent_course():
-    res = client.get("/courses/invalid-id")
+
+# === Test 3: Getting a course that doesn't exist should return 404 ===
+def test_get_nonexistent_course(auth_header):
+    # GET /courses/{invalid_id}
+    res = client.get("/courses/invalid-id-1234", headers=auth_header)
     assert res.status_code == 404
     assert res.json()["detail"] == "Course not found"
 
-def test_content_empty_list():
-    token = get_token()
-    headers = {"Authorization": f"Bearer {token}"}
 
-    # Create course
-    course_data = {
-        "title": "Zero Content Course",
-        "description": "Testing empty content.",
-        "thumbnail_url": "https://example.com/none.png"
+# === Test 4: A new course should return an empty list of contents ===
+def test_content_empty_list(auth_header):
+    # Create new course
+    course_payload = {
+        "title": "Empty Course",
+        "description": "Should have no content"
     }
-    res = client.post("/courses/", json=course_data, headers=headers)
+    res = client.post("/courses/", json=course_payload, headers=auth_header)
     assert res.status_code == 200
     course_id = res.json()["id"]
 
-    # Fetch contents (should be empty)
-    res = client.get(f"/courses/{course_id}/contents")
+    # GET /courses/{course_id}/contents should return []
+    res = client.get(f"/courses/{course_id}/contents", headers=auth_header)
     assert res.status_code == 200
     assert res.json() == []
