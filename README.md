@@ -1,3 +1,387 @@
+## API Endpoint Specifications
+
+### Week 1 — Onboarding & Auth Module
+
+#### POST /auth/signup
+
+**Description:** Sign up a user via email/password or wallet
+
+**Request Body:**
+
+```json
+{
+  "email": "string",
+  "username": "string (optional)",
+  "password": "string (optional)",
+  "wallet_address": "string (optional)"
+}
+```
+
+**Response:**
+
+```json
+{
+  "access_token": "string",
+  "user": {
+    "id": "string",
+    "email": "string",
+    "username": "string",
+    "wallet_address": "string",
+    "auth_provider": "credentials | oauth | web3",
+    "created_at": "datetime"
+  }
+}
+```
+
+---
+
+#### POST /auth/login
+
+**Description:** Login with email/password
+
+**Request Body:**
+
+```json
+{
+  "email": "string",
+  "password": "string"
+}
+```
+
+**Response:**
+
+```json
+{
+  "access_token": "string",
+  "user": {
+    "id": "string",
+    "email": "string",
+    "username": "string",
+    "wallet_address": "string",
+    "auth_provider": "string",
+    "created_at": "datetime"
+  }
+}
+```
+
+---
+
+#### POST /auth/oauth
+
+**Description:** Social login (Google, Twitter via OAuth)
+
+**Request Body:**
+
+```json
+{
+  "provider": "google | twitter",
+  "token": "string"
+}
+```
+
+**Response:**
+Same as /auth/login
+
+---
+
+#### GET /users/me
+
+**Description:** Get the current user's profile
+
+**Headers:**
+
+```
+Authorization: Bearer <JWT>
+```
+
+**Response:**
+
+```json
+{
+  "id": "string",
+  "email": "string",
+  "username": "string",
+  "wallet_address": "string",
+  "auth_provider": "string",
+  "created_at": "datetime"
+}
+```
+
+---
+
+### Week 2 — Courses, Modules, Lessons, Progress
+
+#### POST /courses/
+
+**Description:** Create a course
+
+**Request Body:**
+
+```json
+{
+  "title": "string",
+  "description": "string",
+  "thumbnail_url": "string (optional)"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": "string",
+  "title": "string",
+  "description": "string",
+  "thumbnail_url": "string",
+  "creator_id": "string",
+  "is_published": false,
+  "created_at": "datetime"
+}
+```
+
+---
+
+#### GET /courses/my
+
+**Description:** Get all courses by the logged-in creator
+
+**Response:**
+
+```json
+[
+  {
+    "id": "string",
+    "title": "string",
+    "description": "string",
+    "is_published": "boolean"
+  }
+]
+```
+
+---
+
+#### POST /courses/{id}/publish
+
+**Description:** Publish a course
+
+**Response:**
+
+```json
+{
+  "status": "published"
+}
+```
+
+---
+
+#### POST /courses/{id}/modules/
+
+**Description:** Add module to a course
+
+**Request Body:**
+
+```json
+{
+  "title": "string"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": "string",
+  "title": "string",
+  "course_id": "string",
+  "created_at": "datetime"
+}
+```
+
+---
+
+#### POST /modules/{id}/lessons/
+
+**Description:** Add a lesson to a module
+
+**Request Body:**
+
+```json
+{
+  "title": "string",
+  "content": "string (markdown)",
+  "video_url": "string (optional)"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": "string",
+  "title": "string",
+  "content": "string",
+  "video_url": "string",
+  "module_id": "string",
+  "created_at": "datetime"
+}
+```
+
+---
+
+#### POST /progress/{lesson\_id}/complete
+
+**Description:** Mark a lesson as complete
+
+**Response:**
+
+```json
+{
+  "status": "completed",
+  "lesson_id": "string"
+}
+```
+
+---
+
+#### GET /progress/{course\_id}
+
+**Description:** Get progress in a course
+
+**Response:**
+
+```json
+{
+  "course_id": "string",
+  "completed_lessons": ["string"],
+  "progress_percent": "float"
+}
+```
+
+---
+
+### Week 3 — Community, Feed, Notifications
+
+#### POST /community/
+
+**Description:** Create a community
+
+**Request Body:**
+
+```json
+{
+  "name": "string",
+  "description": "string"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": "string",
+  "name": "string",
+  "description": "string",
+  "created_at": "datetime"
+}
+```
+
+---
+
+#### POST /community/{id}/join
+
+**Description:** Join a community
+
+**Response:**
+
+```json
+{
+  "status": "joined",
+  "community_id": "string"
+}
+```
+
+---
+
+#### GET /community/feed
+
+**Description:** Get community feed
+
+**Response:**
+
+```json
+[
+  {
+    "post_id": "string",
+    "author_id": "string",
+    "content": "string",
+    "created_at": "datetime",
+    "likes": "int"
+  }
+]
+```
+
+---
+
+#### POST /community/{id}/posts
+
+**Description:** Create a post in a community
+
+**Request Body:**
+
+```json
+{
+  "content": "string"
+}
+```
+
+**Response:**
+
+```json
+{
+  "post_id": "string",
+  "content": "string",
+  "author_id": "string",
+  "created_at": "datetime"
+}
+```
+
+---
+
+#### GET /notifications/
+
+**Description:** Get user notifications
+
+**Response:**
+
+```json
+[
+  {
+    "id": "string",
+    "type": "course_complete | post | milestone",
+    "message": "string",
+    "read": "boolean",
+    "created_at": "datetime"
+  }
+]
+```
+
+---
+
+#### PATCH /notifications/{id}/read
+
+**Description:** Mark notification as read
+
+**Response:**
+
+```json
+{
+  "status": "read",
+  "notification_id": "string"
+}
+```
+
+
+
 # lurnify-backend
 Build and publish educational content.
 

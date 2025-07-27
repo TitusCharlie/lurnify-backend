@@ -14,6 +14,6 @@ class Course(SQLModel, table=True):
     author_id: str = Field(foreign_key="user.id")
     thumbnail_url: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    # published: bool = Field(default=False, description="Weather the course is published")
+    published: bool = Field(default=False, description="Weather the course is published")
 
     contents: List["Content"] = Relationship(back_populates="course")  # ✅ Don't use Mapped here

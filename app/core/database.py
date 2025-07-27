@@ -16,5 +16,5 @@ def get_session() -> Session:
 
 # Initialize tables (called at app startup)
 def init_db() -> None:
-    import app.models  # ensures all models are loaded for metadata
-    SQLModel.metadata.create_all(engine)
+    from app.models import user # ensures all models are loaded for metadata
+    SQLModel.metadata.create_all(bind=engine)

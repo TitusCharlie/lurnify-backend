@@ -15,8 +15,3 @@ class UserRead(BaseModel):
     wallet_address: Optional[str]
     auth_provider: str
     created_at: datetime
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: Optional[str] = None
-    wallet_address: Optional[str] = None

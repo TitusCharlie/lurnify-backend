@@ -2,14 +2,17 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
     POSTGRES_HOST: str
-    POSTGRES_PORT: int
+    POSTGRES_PORT: str
+    SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    ALGORITHM: str = "HS256"
+    PROJECT_NAME: str
 
-    DEBUG: bool
+    DEBUG: bool = True
     ALLOWED_ORIGINS: List[str] = ["*"]
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
@@ -23,7 +26,8 @@ class Settings(BaseSettings):
     WEB3_AUTH_PROVIDER_URL: str = ""
     MORALIS_API_KEY: str = ""
 
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=".env.test") # for testing
+    # model_config = SettingsConfigDict(env_file=".env") # in production   
 
     @property
     def database_url(self) -> str:
