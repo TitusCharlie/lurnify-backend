@@ -1,18 +1,21 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from app.models.user import User
-from app.schemas import auth, user
-from app.services.auth import signup_user
+from app.schemas.auth import SignupRequest, AuthResponse, UserLogin
+from app.services.auth import signup_user, authenticate_user
 from app.core.database import get_session
   
 router = APIRouter()
 
 # api/auth.py
-@router.post("/signup", response_model=auth.AuthResponse)
-def signup(data: user.UserCreate, db: Session = Depends(get_session)):
+@router.post("/signup", response_model=AuthResponse)
+def signup(data: SignupRequest, db: Session = Depends(get_session)):
     return signup_user(data, db)
 
-
+@router.post("/login")
+def login(data: UserLogin, db: Session = Depends(get_session)):
+    token = authenticate_user(data.model_dump(), db)
+    return {"access_token": token, "token_type": "bearer"}
 # @router.post("/login", response_model=AuthResponse)
 # def login(data: UserLogin, db: Session = Depends(get_session)):
 #     user = db.exec(select(User).where(User.email == data.email)).first()

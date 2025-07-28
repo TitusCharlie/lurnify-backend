@@ -38,7 +38,7 @@ def override_get_session():
 def setup_db():
     SQLModel.metadata.create_all(engine)
     yield
-    SQLModel.metadata.drop_all(engine)
+    # SQLModel.metadata.drop_all(engine)
     
 # Test client that uses the override
 @pytest.fixture

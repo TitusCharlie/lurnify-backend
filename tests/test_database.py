@@ -10,9 +10,11 @@ from dotenv import load_dotenv
 def test_signup(client):
     response = client.post("/auth/signup", json={
         "email": "testuser@example.com",
-        # "password": "TestPass123",
+        "password": "TestPass123",
         "username": "testuser"
     })
-    assert response.status_code == 200
+    print(response.json())
+
+    assert response.status_code == 200 
     data = response.json()
     assert data["email"] == "testuser@example.com"

@@ -8,8 +8,8 @@ from typing import Optional
 class SignupRequest(BaseModel):
     email: str
     username: str
-    password: str
-    wallet_address: str | None = None
+    password: Optional[str] = None  # optional for web3 login
+    wallet_address: Optional[str] = None  # will be auto-generated if missing
 
 class AuthResponse(BaseModel):
     access_token: str
@@ -18,4 +18,4 @@ class AuthResponse(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: Optional[str] = None
-    wallet_address: Optional[str] = None
+    # wallet_address: Optional[str] = None

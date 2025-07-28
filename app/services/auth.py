@@ -1,42 +1,51 @@
 from sqlmodel import Session, select
 from fastapi import HTTPException
-from app.schemas.auth import SignupRequest, AuthResponse
+from app.schemas.auth import SignupRequest, AuthResponse, UserLogin
 from app.models.user import User
-# from app.core.security import hash_password, create_access_token
-# from app.services.wallet_service import generate_wallet  # optional
+from app.core.security import hash_password, create_access_token
 import uuid
+from typing import Optional
+from app.services.utils import verify_password, create_jwt_token
+from app.services.wallet import generate_wallet_address  # utility function
 
-
-def signup_user(data: SignupRequest, db: Session) -> AuthResponse:
-    # 1. Check if user already exists
-    existing_user = db.exec(select(User).where(User.email == data.email)).first()
-    if existing_user:
+def signup_user(data: SignupRequest, db: Session) -> dict:
+    existing = db.exec(select(User).where(User.email == data.email)).first()
+    if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Generate wallet address if not provided
+    # wallet_address = SignupRequest.wallet_address or generate_wallet_address()
 
-    # 2. Hash password
-    hashed_pw = hash_password(data.password)
-
-    # 3. Generate wallet
-    wallet_address = generate_wallet()  # or stub like: str(uuid.uuid4())
-
-    # 4. Create user
-    user = User(
+    user = User(    
         email=data.email,
         username=data.username,
-        password_hash=hashed_pw,
-        wallet_address=wallet_address,
-        auth_provider="credentials"
+        password_hash=hash_password(data.password) if data.password else None,
+        # wallet_address=wallet_address,
+        auth_provider="web3" if not data.password else "credentials"
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    # 5. Create JWT token
-    token = create_access_token({"sub": user.id})
+    token = create_access_token({"sub": str(user.id)})
 
-    # 6. Return response
+    # return {"access_token": token, "token_type": "bearer"}
     return AuthResponse(
         access_token=token,
-        token_type="bearer",
-        user=user
+        token_type="bearer"
     )
+
+def authenticate_user(data: dict, db: Session):
+    if data.wallet_address:
+        user = db.exec(select(User).where(User.wallet_address == data.wallet_address)).first()
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid wallet address")
+        return create_jwt_token(user)
+
+    elif data.email and data.password:
+        user = db.exec(select(User).where(User.email == data.email)).first()
+        if not user or not user.password_hash or not verify_password(data.password, user.password_hash):
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+        return create_jwt_token(user)
+    
+    raise HTTPException(status_code=400, detail="Invalid login data")
