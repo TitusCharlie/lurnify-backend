@@ -5,7 +5,9 @@ from app.schemas.auth import SignupRequest, AuthResponse, UserLogin
 from app.services.auth import signup_user, authenticate_user
 from app.core.database import get_session
   
-router = APIRouter()
+router = APIRouter(
+    prefix="/auth",
+)
 
 # api/auth.py
 @router.post("/signup", response_model=AuthResponse)
@@ -16,6 +18,7 @@ def signup(data: SignupRequest, db: Session = Depends(get_session)):
 def login(data: UserLogin, db: Session = Depends(get_session)):
     token = authenticate_user(data.model_dump(), db)
     return {"access_token": token, "token_type": "bearer"}
+
 # @router.post("/login", response_model=AuthResponse)
 # def login(data: UserLogin, db: Session = Depends(get_session)):
 #     user = db.exec(select(User).where(User.email == data.email)).first()

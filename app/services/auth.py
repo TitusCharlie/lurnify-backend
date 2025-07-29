@@ -6,7 +6,19 @@ from app.core.security import hash_password, create_access_token
 import uuid
 from typing import Optional
 from app.services.utils import verify_password, create_jwt_token
-from app.services.wallet import generate_wallet_address  # utility function
+from app.services.wallet import generate_wallet_address  # utility 
+
+# app/services/auth.py
+
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from sqlalchemy.orm import Session
+from sqlmodel import select
+from app.models.user import User
+from app.core.database import get_session
+from app.core.config import settings
+
 
 def signup_user(data: SignupRequest, db: Session) -> dict:
     existing = db.exec(select(User).where(User.email == data.email)).first()
@@ -32,7 +44,8 @@ def signup_user(data: SignupRequest, db: Session) -> dict:
     # return {"access_token": token, "token_type": "bearer"}
     return AuthResponse(
         access_token=token,
-        token_type="bearer"
+        token_type="bearer",
+        user=user
     )
 
 def authenticate_user(data: dict, db: Session):
@@ -49,3 +62,28 @@ def authenticate_user(data: dict, db: Session):
         return create_jwt_token(user)
     
     raise HTTPException(status_code=400, detail="Invalid login data")
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+# def get_current_user(
+#     token: str = Depends(oauth2_scheme),
+#     db: Session = Depends(get_session)
+# ) -> User:
+#     credentials_exception = HTTPException(
+#         status_code=status.HTTP_401_UNAUTHORIZED,
+#         detail="Could not validate credentials",
+#         headers={"WWW-Authenticate": "Bearer"},
+#     )
+#     try:
+#         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+#         user_id: str = payload.get("sub")
+#         if user_id is None:
+#             raise credentials_exception
+#     except JWTError:
+#         raise credentials_exception
+
+#     user = db.exec(select(User).where(User.id == user_id)).first()
+#     if user is None:
+#         raise credentials_exception
+#     return user

@@ -1,11 +1,16 @@
+# app/models/lesson.py
+
 from sqlmodel import SQLModel, Field, Relationship
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
-from uuid import uuid4
+import uuid
 
 class Lesson(SQLModel, table=True):
-    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     title: str
-    description: Optional[str] = None
-    course_id: str = Field(foreign_key="course.id")
-    # Add relationships if needed
+    content: Optional[str] = None
+    video_url: Optional[str] = None
+    module_id: str = Field(foreign_key="module.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # module: "Module" = Relationship(back_populates="lessons")

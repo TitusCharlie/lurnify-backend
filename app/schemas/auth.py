@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends
 from app.core.database import get_session
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from app.schemas.user import UserRead
+# from app
 
 class SignupRequest(BaseModel):
     email: str
@@ -14,6 +16,7 @@ class SignupRequest(BaseModel):
 class AuthResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
+    user: UserRead
 
 class UserLogin(BaseModel):
     email: EmailStr

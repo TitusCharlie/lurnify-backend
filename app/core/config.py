@@ -26,8 +26,8 @@ class Settings(BaseSettings):
     WEB3_AUTH_PROVIDER_URL: str = ""
     MORALIS_API_KEY: str = ""
 
-    model_config = SettingsConfigDict(env_file=".env.test") # for testing
-    # model_config = SettingsConfigDict(env_file=".env") # in production   
+    # model_config = SettingsConfigDict(env_file=".env.test") # for testing
+    model_config = SettingsConfigDict(env_file=".env") # in production   
 
     @property
     def database_url(self) -> str:
