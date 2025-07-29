@@ -1,5 +1,11 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
+import psycopg2
+import os
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from dotenv import load_dotenv
+
+load_dotenv()  # if you're using .env
 
 class Settings(BaseSettings):
     POSTGRES_USER: str
@@ -35,5 +41,36 @@ class Settings(BaseSettings):
             f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
             f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
         )
+    
+    def create_database_if_not_exists(self):
+        try:
+            # Connect to default 'postgres' db
+            con = psycopg2.connect(
+                dbname=self.POSTGRES_DB,
+                user=self.POSTGRES_USER,
+                password=self.POSTGRES_PASSWORD,
+                host=self.POSTGRES_HOST,
+                port=self.POSTGRES_PORT
+            )
+            con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+
+            cur = con.cursor()
+
+            # Check if database exists
+            cur.execute(f"SELECT 1 FROM pg_database WHERE datname = '{self.POSTGRES_DB}';")
+            exists = cur.fetchone()
+
+            if not exists:
+                cur.execute(f"CREATE DATABASE {self.POSTGRES_DB};")
+                print(f"Database '{self.POSTGRES_DB}' created successfully.")
+            else:
+                print(f"Database '{self.POSTGRES_DB}' already exists.")
+
+            cur.close()
+            con.close()
+        except Exception as e:
+            print(f"Error creating database: {e}")
+
 
 settings = Settings()
+settings.create_database_if_not_exists()

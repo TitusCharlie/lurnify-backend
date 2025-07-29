@@ -8,7 +8,7 @@ from app.api import auth, users, courses, modules, lessons, assets, publish, pro
 from app.core.database import get_session, init_db
 
 def create_app(get_session_override=None) -> FastAPI:
-
+    
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         # Run only in development mode and not during testing
@@ -22,6 +22,7 @@ def create_app(get_session_override=None) -> FastAPI:
         lifespan=lifespan  #  Modern startup hook
     )
 
+    
     # CORS middleware
     app.add_middleware(
         CORSMiddleware,
