@@ -11,18 +11,18 @@ def create_app(get_session_override=None) -> FastAPI:
     
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        # Run only in development mode and not during testing
+        # ✅ Create DB if not exists (only in dev, not during test)
         if settings.DEBUG and not get_session_override:
+            settings.create_database_if_not_exists()  # <- add this line
             init_db()
         yield  # After startup, before shutdown
 
     app = FastAPI(
         title=settings.PROJECT_NAME,
         version="1.0",
-        lifespan=lifespan  #  Modern startup hook
+        lifespan=lifespan
     )
 
-    
     # CORS middleware
     app.add_middleware(
         CORSMiddleware,
@@ -40,7 +40,6 @@ def create_app(get_session_override=None) -> FastAPI:
     app.include_router(auth.router, prefix="/auth", tags=["Auth"])
     app.include_router(users.router, prefix="/users", tags=["Users"])
     app.include_router(courses_router)
-    # app.include_router(courses.router, prefix="/courses", tags=["Courses"])
     app.include_router(modules.router, prefix="/modules", tags=["Modules"])
     app.include_router(lessons.router, prefix="/lessons", tags=["Lessons"])
     app.include_router(assets.router, prefix="/assets", tags=["Assets"])
