@@ -4,9 +4,10 @@ from app.models.user import User
 from app.schemas.auth import SignupRequest, AuthResponse, UserLogin
 from app.services.auth import signup_user, authenticate_user
 from app.core.database import get_session
-  
+
 router = APIRouter(
     prefix="/auth",
+    tags=["auth"]
 )
 
 # api/auth.py

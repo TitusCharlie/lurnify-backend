@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.api.courses import router as courses_router
+from app.api.auth import router as auth_router
 from app.api import auth, users, courses, modules, lessons, assets, publish, progress
 from app.core.database import get_session, init_db
 
@@ -37,7 +38,7 @@ def create_app(get_session_override=None) -> FastAPI:
         app.dependency_overrides[get_session] = get_session_override
 
     # Routers
-    app.include_router(auth.router, prefix="/auth", tags=["Auth"])
+    app.include_router(auth_router)
     app.include_router(users.router, prefix="/users", tags=["Users"])
     app.include_router(courses_router)
     app.include_router(modules.router, prefix="/modules", tags=["Modules"])

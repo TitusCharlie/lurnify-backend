@@ -9,7 +9,10 @@ from app.core.database import get_session
 from app.services.courses import create_course
 from app.models.user import User
 
-router = APIRouter(prefix="/courses", tags=["Courses"])
+router = APIRouter(
+    prefix="/courses",
+    tags=["Courses"]
+    )
 
 @router.post("/", response_model=CourseRead, status_code=status.HTTP_201_CREATED)
 def create_course(
