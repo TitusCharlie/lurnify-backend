@@ -5,7 +5,7 @@ import os
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from dotenv import load_dotenv
 
-load_dotenv()  # if you're using .env
+# load_dotenv()  # if you're using .env
 
 class Settings(BaseSettings):
     POSTGRES_USER: str
@@ -46,7 +46,7 @@ class Settings(BaseSettings):
         try:
             # Connect to default 'postgres' db
             con = psycopg2.connect(
-                dbname=self.POSTGRES_DB,
+                dbname="postgres",
                 user=self.POSTGRES_USER,
                 password=self.POSTGRES_PASSWORD,
                 host=self.POSTGRES_HOST,

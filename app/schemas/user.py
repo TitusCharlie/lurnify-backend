@@ -13,5 +13,9 @@ class UserRead(BaseModel):
     email: EmailStr
     username: Optional[str]
     wallet_address: Optional[str]
-    auth_provider: str
+    auth_provider: Optional[str]
     created_at: datetime
+
+    model_config = {
+        "from_attributes": True
+    }

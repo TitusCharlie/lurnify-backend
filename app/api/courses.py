@@ -1,59 +1,71 @@
-# app/api/courses.py
-
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session
-from app.models.course import Course
-from app.schemas.course import CourseCreate, CourseRead
+from sqlmodel import Session, select
+from typing import List
 from app.core.database import get_session
-# from app.services.auth import get_current_user
-from app.services.courses import create_course
+from app.models.course import Course
 from app.models.user import User
+from app.schemas.course import CourseCreate, CourseRead, CourseUpdate
+from app.services.courses import (
+    create_course,
+    get_course,
+    list_courses,
+    update_course,
+    delete_course,
+)
 
 router = APIRouter(
     prefix="/courses",
     tags=["Courses"]
-    )
+)
+
+# Simulate a user until auth is fully ready
+FAKE_USER = User(id="wrong-user-id", email="wrong@example.com", username="WrongDevUser")
+FAKE_USER_1 = User(id="right-user-id", email="right@example.com", username="RightDevUser")
 
 @router.post("/", response_model=CourseRead, status_code=status.HTTP_201_CREATED)
-def create_course(
+def create_course_api(
     data: CourseCreate,
     db: Session = Depends(get_session),
-    # Fake a test user until auth is ready
-    current_user: User = User(id="dev-user-id", email="test@example.com", username="DevUser")
-    # current_user: User = Depends(get_current_user)
+    current_user: User = FAKE_USER,
 ):
-    course = Course(
-        **data.dict(),
-        creator_id=current_user.id
-    )
-    db.add(course)
-    db.commit()
-    db.refresh(course)
+    return create_course(data,
+                         author_id=current_user.id,
+                         db=db
+                         )
+
+
+@router.get("/", response_model=List[CourseRead])
+def list_courses_api(db: Session = Depends(get_session)):
+    return list_courses(db)
+
+
+@router.get("/{course_id}", response_model=CourseRead)
+def get_course_api(course_id: str, db: Session = Depends(get_session)):
+    course = get_course(course_id, db)
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
     return course
 
 
-# @router.get("/courses/", response_model=List[CourseRead])
-# def list_courses(db: Session = Depends(get_session)):
-#     return db.exec(select(Course)).all()
+@router.put("/{course_id}", response_model=CourseRead)
+def update_course_api(
+    course_id: str,
+    data: CourseUpdate,
+    db: Session = Depends(get_session),
+    current_user_id: User = FAKE_USER.id,
+):
+    course = update_course(course_id, data, db, current_user_id)
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    return course
 
-# @router.get("/{course_id}", response_model=CourseRead)
-# def get_course(course_id: str, db: Session = Depends(get_session)):
-#     course = db.get(Course, course_id)
-#     if not course:
-#         raise HTTPException(status_code=404, detail="Course not found")
-#     return course
 
-# @router.post("/courses/{course_id}/contents", response_model=ContentRead)
-# def add_content(course_id: str, data: ContentCreate, db: Session = Depends(get_session), token: dict = Depends(jwt_service.verify_token)):
-#     course = db.get(Course, course_id)
-#     if not course:
-#         raise HTTPException(status_code=404, detail="Course not found")
-#     content = Content(**data.dict(), course_id=course_id)
-#     db.add(content)
-#     db.commit()
-#     db.refresh(content)
-#     return content
-
-# @router.get("/courses/{course_id}/contents", response_model=List[ContentRead])
-# def list_contents(course_id: str, db: Session = Depends(get_session)):
-#     return db.exec(select(Content).where(Content.course_id == course_id)).all()
+@router.delete("/{course_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_course_api(
+    course_id: str,
+    db: Session = Depends(get_session),
+    current_user_id: User = FAKE_USER.id,
+):
+    success = delete_course(course_id, db, current_user_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Course not found")

@@ -7,7 +7,7 @@ class CourseBase(BaseModel):
     title: str
     description: Optional[str] = None
     category: Optional[str] = None
-    tags: Optional[List[str]] = []
+    # tags: Optional[List[str]] = []
     thumbnail: Optional[HttpUrl] = None
     price: Optional[float] = 0.0
     level: Optional[str] = "beginner"
@@ -28,7 +28,7 @@ class CourseUpdate(BaseModel):
 class CourseRead(CourseBase):
     id: UUID
     slug: str
-    creator_id: UUID
+    author_id: UUID
     is_draft: bool
     is_published: bool
     created_at: datetime

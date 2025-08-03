@@ -17,7 +17,7 @@ class Course(SQLModel, table=True):
 
     is_published: bool = Field(default=False)
     is_draft: bool = Field(default=True)
-    creator_id: Optional[str] = Field(foreign_key="user.id")
+    author_id: Optional[str] = Field(foreign_key="user.id")
 
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
