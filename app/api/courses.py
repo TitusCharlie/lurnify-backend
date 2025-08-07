@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from typing import List
 from app.core.database import get_session
+from app.core.dependencies import get_current_user
 from app.models.course import Course
 from app.models.user import User
 from app.schemas.course import CourseCreate, CourseRead, CourseUpdate
@@ -11,6 +12,7 @@ from app.services.courses import (
     list_courses,
     update_course,
     delete_course,
+    publish_course
 )
 
 router = APIRouter(
@@ -33,6 +35,12 @@ def create_course_api(
                          db=db
                          )
 
+@router.put("/{course_id}/publish", response_model=CourseRead)
+def publish(course_id: str, db: Session = Depends(get_session), current_user: User = Depends(get_current_user)):
+    published = publish_course(course_id, current_user.id, db)
+    if not published:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not allowed or course not found")
+    return published
 
 @router.get("/", response_model=List[CourseRead])
 def list_courses_api(db: Session = Depends(get_session)):

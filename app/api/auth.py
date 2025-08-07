@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from app.models.user import User
 from app.schemas.auth import SignupRequest, AuthResponse, UserLogin
-from app.services.auth import signup_user
+from app.services.auth import signup_user, login_user
 from app.core.database import get_session
 
 router = APIRouter(
@@ -17,10 +17,9 @@ def signup(data: SignupRequest, db: Session = Depends(get_session)):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-# @router.post("/login")
-# def login(data: UserLogin, db: Session = Depends(get_session)):
-#     token = authenticate_user(data.model_dump(), db)
-#     return {"access_token": token, "token_type": "bearer"}
+@router.post("/login", response_model=AuthResponse)
+def login(data: UserLogin, db: Session = Depends(get_session)):
+    return login_user(data, db)
 
 # @router.post("/login", response_model=AuthResponse)
 # def login(data: UserLogin, db: Session = Depends(get_session)):

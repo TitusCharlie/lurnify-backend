@@ -17,6 +17,15 @@ def create_course(data: CourseCreate, author_id: str, db: Session) -> Course:
     db.refresh(course)
     return course
 
+def publish_course(course_id: str, current_user_id: str, db: Session) -> Optional[Course]:
+    course = db.get(Course, course_id)
+    if not course or course.author_id != current_user_id:
+        return None
+    course.is_published = True
+    db.commit()
+    db.refresh(course)
+    return course
+
 def get_course(course_id: str, db: Session) -> Optional[Course]:
     return db.get(Course, course_id)
 

@@ -7,14 +7,15 @@ class CourseBase(BaseModel):
     title: str
     description: Optional[str] = None
     category: Optional[str] = None
-    # tags: Optional[List[str]] = []
+    tags: Optional[List[str]] = []
     thumbnail: Optional[HttpUrl] = None
     price: Optional[float] = 0.0
     level: Optional[str] = "beginner"
     language: Optional[str] = "English"
 
 class CourseCreate(CourseBase):
-    pass  # creator_id will be taken from the auth context
+    title: str
+    description: Optional[str] = None
 
 class CourseUpdate(BaseModel):
     title: Optional[str] = None
