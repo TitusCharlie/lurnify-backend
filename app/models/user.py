@@ -1,9 +1,9 @@
 # app/models/user.py
+from __future__ import annotations
 from sqlmodel import SQLModel, Field
 from typing import Optional
 from datetime import datetime, UTC
 import uuid
-from __future__ import annotations
 
 class User(SQLModel, table=True):
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
