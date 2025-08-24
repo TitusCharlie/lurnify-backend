@@ -4,7 +4,7 @@ from sqlmodel import Field, Relationship, SQLModel
 from app.models.course import Course
 
 class Module(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[str] = Field(default=None, primary_key=True)
     title: str
     description: Optional[str] = None
     order: Optional[int] = None

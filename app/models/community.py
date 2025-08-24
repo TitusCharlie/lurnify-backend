@@ -8,7 +8,7 @@ class Community(SQLModel, table=True):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True, index=True)
     name: str
     description: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.now)
 
     creator_id: str = Field(foreign_key="user.id")
     creator: "User" = Relationship(back_populates="communities")
@@ -21,7 +21,7 @@ class Membership(SQLModel, table=True):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True, index=True)
     user_id: str = Field(foreign_key="user.id")
     community_id: str = Field(foreign_key="community.id")
-    joined_at: datetime = Field(default_factory=datetime.utcnow)
+    joined_at: datetime = Field(default_factory=datetime.now)
 
     user: "User" = Relationship(back_populates="memberships")
     community: Community = Relationship(back_populates="members")
