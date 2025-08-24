@@ -8,7 +8,7 @@ class Module(SQLModel, table=True):
     title: str
     description: Optional[str] = None
     order: Optional[int] = None
-    course_id: int = Field(foreign_key="Course.id")
+    course_id: str = Field(foreign_key="Course.id")
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
     is_published: bool = Field(default=False)
