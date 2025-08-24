@@ -39,7 +39,7 @@ def create_app(get_session_override=None) -> FastAPI:
                 cur.close()
                 conn.close()
             except Exception as e:
-                print(f"⚠️ Database check/creation skipped: {e}")
+                print(f"Database check/creation skipped: {e}")
 
         # ✅ Always init tables (both local + Render)
         init_db()
