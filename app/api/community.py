@@ -11,7 +11,6 @@ from app.schemas.community import (
     CommunityCreate, CommunityRead,
     PostCreate, PostRead, MembershipRead
 )
-from app.services.auth import get_current_user
 from app.models.user import User
 
 

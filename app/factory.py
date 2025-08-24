@@ -7,7 +7,7 @@ from app.api.courses import router as courses_router
 from app.api.lessons import router as lessons_router
 from app.api.modules import router as modules_router
 from app.api.auth import router as auth_router
-from app.api import auth, users, courses, modules, lessons, assets, publish, progress
+from app.api import auth, community, users, courses, modules, lessons, publish, progress
 from app.core.database import get_session, init_db
 
 def create_app(get_session_override=None) -> FastAPI:
@@ -44,7 +44,7 @@ def create_app(get_session_override=None) -> FastAPI:
     app.include_router(courses_router)
     app.include_router(lessons_router)
     app.include_router(modules_router)
-    app.include_router(assets.router, prefix="/assets", tags=["Assets"])
+    app.include_router(community.router, prefix="/assets", tags=["Assets"])
     app.include_router(publish.router, prefix="/courses", tags=["Publishing"])
     app.include_router(progress.router, prefix="/progress", tags=["Progress"])
     app.include_router(users.router, prefix="/users", tags=["Users"])
