@@ -15,7 +15,10 @@ from app.services.auth import get_current_user
 from app.models.user import User
 
 
-router = APIRouter(prefix="/communities", tags=["Communities"])
+router = APIRouter(
+    prefix="/community",
+    tags=["Community"]
+)
 
 
 @router.post("/", response_model=CommunityRead)
