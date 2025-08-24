@@ -18,6 +18,6 @@ class User(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.now)
     
     # relationships
-    communities: List["Community"] = Relationship(back_populates="creator")
-    memberships: List["Membership"] = Relationship(back_populates="user")
-    posts: List["Post"] = Relationship(back_populates="user")
+    # communities: List["Community"] = Relationship(back_populates="creator")
+    # memberships: List["Membership"] = Relationship(back_populates="user")
+    # posts: List["Post"] = Relationship(back_populates="user")
