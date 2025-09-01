@@ -42,6 +42,11 @@ def publish(course_id: str, db: Session = Depends(get_session), current_user: Us
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not allowed or course not found")
     return published
 
+# Public route → only published
+@router.get("/", response_model=List[CourseRead])
+def get_published_courses(db: Session = Depends(get_session)):
+    return list_courses(db, only_published=True)
+
 @router.get("/", response_model=List[CourseRead])
 def list_courses_api(db: Session = Depends(get_session)):
     return list_courses(db)
