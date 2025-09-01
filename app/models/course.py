@@ -52,3 +52,4 @@ class Course(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     modules: List["Module"] = Relationship(back_populates="course")
+from app.models import Module

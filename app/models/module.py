@@ -37,3 +37,5 @@ class Module(SQLModel, table=True):
 
     course: Optional["Course"] = Relationship(back_populates="modules")
     lessons: List["Lesson"] = Relationship(back_populates="module")
+from app.models import Lesson
+from app.models import Course
