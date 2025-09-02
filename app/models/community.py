@@ -1,5 +1,6 @@
 from __future__ import annotations
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field
+from sqlalchemy.orm import Mapped, relationship
 from typing import Optional, List
 from datetime import datetime
 import uuid
@@ -12,10 +13,10 @@ class Community(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.now)
 
     creator_id: str = Field(foreign_key="user.id")
-    creator: "User" = Relationship(back_populates="communities")
+    creator: Mapped["User"] = relationship(back_populates="communities")
 
-    members: List["Membership"] = Relationship(back_populates="community")
-    posts: List["Post"] = Relationship(back_populates="community")
+    members: Mapped[List["Membership"]] = relationship(back_populates="community")
+    posts: Mapped[List["Post"]] = relationship(back_populates="community")
 
 
 class Membership(SQLModel, table=True):
@@ -24,8 +25,8 @@ class Membership(SQLModel, table=True):
     community_id: str = Field(foreign_key="community.id")
     joined_at: datetime = Field(default_factory=datetime.now)
 
-    user: "User" = Relationship(back_populates="memberships")
-    community: "Community" = Relationship(back_populates="members")
+    user: Mapped["User"] = relationship(back_populates="memberships")
+    community: Mapped["Community"] = relationship(back_populates="members")
 
 
 class Post(SQLModel, table=True):
@@ -36,5 +37,5 @@ class Post(SQLModel, table=True):
     community_id: str = Field(foreign_key="community.id")
     user_id: str = Field(foreign_key="user.id")
 
-    community: "Community" = Relationship(back_populates="posts")
-    user: "User" = Relationship(back_populates="posts")
+    community: Mapped["Community"] = relationship(back_populates="posts")
+    user: Mapped["User"] = relationship(back_populates="posts")

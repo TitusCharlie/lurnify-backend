@@ -1,13 +1,18 @@
 from __future__ import annotations
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field
+from sqlalchemy.orm import Mapped, relationship
 from typing import Optional, List
 from datetime import datetime
 import uuid
 
+
 def generate_uuid() -> str:
     return str(uuid.uuid4())
 
+
 class User(SQLModel, table=True):
+    __tablename__ = "user"  # optional, makes it explicit
+
     id: str = Field(default_factory=generate_uuid, primary_key=True, index=True)
     email: Optional[str] = Field(default=None, unique=True, index=True)
     hashed_password: Optional[str] = None
@@ -20,7 +25,7 @@ class User(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 
-    # relationships (all string refs, no imports needed)
-    communities: List["Community"] = Relationship(back_populates="creator")
-    memberships: List["Membership"] = Relationship(back_populates="user")
-    posts: List["Post"] = Relationship(back_populates="user")
+    # ✅ relationships — use Mapped[] + relationship()
+    communities: Mapped[List["Community"]] = relationship(back_populates="creator")
+    memberships: Mapped[List["Membership"]] = relationship(back_populates="user")
+    posts: Mapped[List["Post"]] = relationship(back_populates="user")
