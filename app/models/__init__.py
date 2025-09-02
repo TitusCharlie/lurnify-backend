@@ -5,7 +5,7 @@ from .module import Module
 from .lesson import Lesson
 from .asset import Asset
 from .progress import Progress
-from .community import Community, Membership, Post
+# from .community import Community, Membership, Post
 
 __all__ = [
     "User",
