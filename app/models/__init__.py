@@ -5,5 +5,16 @@ from .module import Module
 from .lesson import Lesson
 from .asset import Asset
 from .progress import Progress
+from .community import Community, Membership, Post
 
-__all__ = ["User", "Course", "Module", "Lesson", "Content", "Asset", "Progress"]
+__all__ = [
+    "User",
+    "Course",
+    "Module",
+    "Lesson",
+    "Asset",
+    "Progress",
+    "Community",
+    "Membership",
+    "Post",
+]

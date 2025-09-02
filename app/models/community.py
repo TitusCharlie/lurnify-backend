@@ -1,8 +1,9 @@
+from __future__ import annotations
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
 from datetime import datetime
 import uuid
-from app.models.user import User
+
 
 class Community(SQLModel, table=True):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True, index=True)
@@ -24,7 +25,7 @@ class Membership(SQLModel, table=True):
     joined_at: datetime = Field(default_factory=datetime.now)
 
     user: "User" = Relationship(back_populates="memberships")
-    community: Community = Relationship(back_populates="members")
+    community: "Community" = Relationship(back_populates="members")
 
 
 class Post(SQLModel, table=True):
@@ -35,5 +36,5 @@ class Post(SQLModel, table=True):
     community_id: str = Field(foreign_key="community.id")
     user_id: str = Field(foreign_key="user.id")
 
-    community: Community = Relationship(back_populates="posts")
+    community: "Community" = Relationship(back_populates="posts")
     user: "User" = Relationship(back_populates="posts")
