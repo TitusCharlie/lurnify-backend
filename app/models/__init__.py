@@ -14,7 +14,7 @@ __all__ = [
     "Lesson",
     "Asset",
     "Progress",
-    "Community",
-    "Membership",
-    "Post",
+    # "Community",
+    # "Membership",
+    # "Post",
 ]

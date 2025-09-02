@@ -1,7 +1,6 @@
 from __future__ import annotations
 from sqlmodel import SQLModel, Field
-from sqlalchemy.orm import Mapped, relationship
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
 import uuid
 
@@ -25,7 +24,7 @@ class User(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 
-    # ✅ fixed relationships
-    communities: Mapped[List["Community"]] = relationship(back_populates="creator")
-    memberships: Mapped[List["Membership"]] = relationship(back_populates="user")
-    posts: Mapped[List["Post"]] = relationship(back_populates="user")
+    # 🔒 Commented until we implement communities & posts
+    # communities: Mapped[List["Community"]] = relationship(back_populates="creator")
+    # memberships: Mapped[List["Membership"]] = relationship(back_populates="user")
+    # posts: Mapped[List["Post"]] = relationship(back_populates="user")
