@@ -35,7 +35,7 @@ class Module(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-    course: Optional["Course"] = Relationship(back_populates="modules")
-    lessons: List["Lesson"] = Relationship(back_populates="module")
-from app.models import Lesson
-from app.models import Course
+#     course: Optional["Course"] = Relationship(back_populates="modules")
+#     lessons: List["Lesson"] = Relationship(back_populates="module")
+# from app.models import Lesson
+# from app.models import Course
