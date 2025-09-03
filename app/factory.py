@@ -65,7 +65,7 @@ def create_app(get_session_override=None) -> FastAPI:
         app.dependency_overrides[get_session] = get_session_override
 
     # Routers
-    app.include_router(community_router)
+    # app.include_router(community_router)
     app.include_router(auth_router)
     app.include_router(courses_router)
     app.include_router(lessons_router)
