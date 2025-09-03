@@ -6,7 +6,7 @@ from app.core.config import settings
 from app.api.courses import router as courses_router
 from app.api.lessons import router as lessons_router
 from app.api.modules import router as modules_router
-from app.api.community import router as community_router
+# from app.api.community import router as community_router
 from app.api.auth import router as auth_router
 from app.api import auth, users, courses, modules, lessons, publish, progress
 from app.core.database import get_session, init_db
