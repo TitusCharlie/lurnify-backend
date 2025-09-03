@@ -19,3 +19,5 @@ __all__ = [
     # "Membership",
     # "Post",
 ]
+
+Base = SQLModel
