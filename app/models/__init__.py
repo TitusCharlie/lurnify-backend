@@ -1,4 +1,5 @@
 # app/models/__init__.py
+from sqlmodel import SQLModel
 from .user import User
 from .course import Course
 from .module import Module
