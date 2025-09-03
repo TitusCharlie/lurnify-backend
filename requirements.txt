@@ -17,3 +17,4 @@ pydantic-settings>=2.0
 pydantic[email]
 python-jose[cryptography]
 python-slugify
+alembic
