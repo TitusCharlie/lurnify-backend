@@ -1,20 +1,3 @@
-# from datetime import datetime
-# from typing import Optional
-# from sqlmodel import Field, Relationship, SQLModel
-# from app.models.course import Course
-
-# class Module(SQLModel, table=True):
-#     id: Optional[str] = Field(default=None, primary_key=True)
-#     title: str
-#     description: Optional[str] = None
-#     order: Optional[int] = None
-#     course_id: str = Field(foreign_key="course.id")
-#     created_at: datetime = Field(default_factory=datetime.now)
-#     updated_at: datetime = Field(default_factory=datetime.now)
-#     is_published: bool = Field(default=False)
-
-#     course: Optional[Course] = Relationship(back_populates="modules")
-
 from datetime import datetime
 from typing import Optional, List
 from sqlmodel import Field, Relationship, SQLModel
