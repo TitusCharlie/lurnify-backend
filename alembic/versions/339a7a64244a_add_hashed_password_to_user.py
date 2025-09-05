@@ -35,10 +35,10 @@ def upgrade() -> None:
     op.drop_index(op.f('ix_lesson_module_id'), table_name='lesson')
     op.create_index(op.f('ix_lesson_id'), 'lesson', ['id'], unique=False)
     op.create_index(op.f('ix_module_id'), 'module', ['id'], unique=False)
-    op.add_column('user', sa.Column('hashed_password', sqlmodel.sql.sqltypes.AutoString(), nullable=True))
-    op.add_column('user', sa.Column('social_provider', sqlmodel.sql.sqltypes.AutoString(), nullable=True))
-    op.add_column('user', sa.Column('social_id', sqlmodel.sql.sqltypes.AutoString(), nullable=True))
-    op.add_column('user', sa.Column('nonce', sqlmodel.sql.sqltypes.AutoString(), nullable=True))
+    op.add_column('user', sa.Column('hashed_password', sa.String(), nullable=True))
+    op.add_column('user', sa.Column('social_provider', sa.String(), nullable=True))
+    op.add_column('user', sa.Column('social_id', sa.String(), nullable=True))
+    op.add_column('user', sa.Column('nonce', sa.String(), nullable=True))
     op.add_column('user', sa.Column('updated_at', sa.DateTime(), nullable=False))
     op.alter_column('user', 'email',
                existing_type=sa.VARCHAR(),
