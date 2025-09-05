@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlmodel import Session, select
 
 from app.models.user import User
@@ -18,7 +18,10 @@ def signup_user(data: SignupRequest, db: Session) -> AuthResponse:
     # Check if user already exists
     existing = db.exec(select(User).where(User.email == data.email)).first()
     if existing:
-        raise ValueError("User already exists")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User with this email already exists"
+        )
 
     hashed_pw = hash_password(data.password) if data.password else None
     wallet = data.wallet_address or generate_wallet_address()
@@ -33,7 +36,7 @@ def signup_user(data: SignupRequest, db: Session) -> AuthResponse:
     db.commit()
     db.refresh(user)
 
-    token = create_access_token({"sub": user.id})
+    token = create_access_token({"sub": str(user.id)})
 
     return AuthResponse(
         access_token=token,
@@ -55,5 +58,6 @@ def login_user(data: UserLogin, db: Session) -> AuthResponse:
 
     return AuthResponse(
         access_token=token,
+        token_type="bearer", 
         user=UserRead.model_validate(user)
     )
