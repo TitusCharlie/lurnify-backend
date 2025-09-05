@@ -3,6 +3,13 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 from app.models import Base  # or Base if you defined Base
+from alembic.autogenerate import renderers
+from sqlmodel.sql.sqltypes import AutoString
+
+@renderers.dispatch_for(AutoString)
+def render_autostring(type_, autogen_context):
+    """Render AutoString() as sa.String() in migrations."""
+    return "sa.String()"
 
 # Alembic config
 config = context.config

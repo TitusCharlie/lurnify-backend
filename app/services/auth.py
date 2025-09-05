@@ -37,6 +37,7 @@ def signup_user(data: SignupRequest, db: Session) -> AuthResponse:
 
     return AuthResponse(
         access_token=token,
+        token_type="bearer",   
         user=UserRead.model_validate(user)
     )
 
