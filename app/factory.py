@@ -65,6 +65,11 @@ def create_app(get_session_override=None) -> FastAPI:
         app.dependency_overrides[get_session] = get_session_override
 
     # Routers
+    # Health check route (Render will hit "/")
+    @app.get("/", tags=["Health"])
+    def health_check():
+        return {"status": "ok"}
+    
     # app.include_router(community_router)
     app.include_router(auth_router)
     app.include_router(courses_router)
