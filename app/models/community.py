@@ -49,3 +49,39 @@
 
 #     community: Mapped["Community"] = relationship(back_populates="posts")
 #     user: Mapped["User"] = relationship(back_populates="posts")
+
+from sqlmodel import SQLModel, Field, Relationship
+from typing import Optional, List
+from datetime import datetime
+import uuid
+
+class Community(SQLModel, table=True):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    name: str
+    description: Optional[str] = None
+    creator_id: str = Field(foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
+
+    members: List["Membership"] = Relationship(back_populates="community")
+    posts: List["Post"] = Relationship(back_populates="community")
+
+
+class Membership(SQLModel, table=True):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    user_id: str = Field(foreign_key="user.id")
+    community_id: str = Field(foreign_key="community.id")
+    role: str  # owner, admin, member
+    joined_at: datetime = Field(default_factory=datetime.now)
+
+    community: "Community" = Relationship(back_populates="members")
+
+
+class Post(SQLModel, table=True):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    community_id: str = Field(foreign_key="community.id")
+    author_id: str = Field(foreign_key="user.id")
+    content: str
+    created_at: datetime = Field(default_factory=datetime.now)
+
+    community: "Community" = Relationship(back_populates="posts")

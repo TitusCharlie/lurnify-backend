@@ -49,3 +49,73 @@
 #         .order_by(Post.created_at.desc())
 #     )
 #     return session.exec(statement).all()
+
+from fastapi import HTTPException
+from sqlmodel import Session, select
+from app.models.community import Community, Membership, Post
+from app.schemas.community import CommunityCreate, PostCreate
+from app.models.user import User
+
+def create_community_service(db: Session, data: CommunityCreate, user: User):
+    community = Community(
+        name=data.name,
+        description=data.description,
+        creator_id=user.id
+    )
+    db.add(community)
+    db.commit()
+    db.refresh(community)
+
+    # Add creator as owner
+    membership = Membership(user_id=user.id, community_id=community.id, role="owner")
+    db.add(membership)
+    db.commit()
+
+    return community
+
+def join_community_service(db: Session, community_id: str, user: User):
+    existing = db.exec(select(Membership).where(
+        Membership.community_id == community_id,
+        Membership.user_id == user.id
+    )).first()
+    if existing:
+        raise HTTPException(400, "Already a member")
+
+    membership = Membership(user_id=user.id, community_id=community_id, role="member")
+    db.add(membership)
+    db.commit()
+    db.refresh(membership)
+    return membership
+
+def leave_community_service(db: Session, community_id: str, user: User):
+    membership = db.exec(select(Membership).where(
+        Membership.community_id == community_id,
+        Membership.user_id == user.id
+    )).first()
+    if not membership:
+        raise HTTPException(400, "Not a member")
+    if membership.role == "owner":
+        raise HTTPException(400, "Owner cannot leave their own community")
+    db.delete(membership)
+    db.commit()
+    return {"message": "Left community"}
+
+def create_post_service(db: Session, community_id: str, data: PostCreate, user: User):
+    membership = db.exec(select(Membership).where(
+        Membership.community_id == community_id,
+        Membership.user_id == user.id
+    )).first()
+    if not membership:
+        raise HTTPException(403, "Join the community first")
+
+    post = Post(community_id=community_id, author_id=user.id, content=data.content)
+    db.add(post)
+    db.commit()
+    db.refresh(post)
+    return post
+
+def get_feed_service(db: Session, user: User):
+    memberships = db.exec(select(Membership).where(Membership.user_id == user.id)).all()
+    community_ids = [m.community_id for m in memberships]
+    posts = db.exec(select(Post).where(Post.community_id.in_(community_ids)).order_by(Post.created_at.desc())).all()
+    return posts
