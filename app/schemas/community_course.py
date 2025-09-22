@@ -1,10 +1,13 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from datetime import datetime
 
 
 class CommunityCourseLinkRead(BaseModel):
+    id: str
     community_id: str
     course_id: str
+    created_at: datetime
 
     class Config:
         from_attributes = True

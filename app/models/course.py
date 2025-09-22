@@ -24,8 +24,7 @@ class Course(SQLModel, table=True):
 
     author_id: str = Field(foreign_key="user.id")
 
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
 
-#     modules: List["Module"] = Relationship(back_populates="course")
-# from app.models import Module
+    communities: List["CommunityCourseLink"] = Relationship(back_populates="course")

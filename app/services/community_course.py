@@ -1,38 +1,64 @@
-from sqlmodel import Session, select
+from sqlmodel import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.community_course import CommunityCourseLink
 from app.models.community import Community
 from app.models.course import Course
 
+# add course to community
+async def add_course_to_community(session: AsyncSession, community_id: str, course_id: str) -> CommunityCourseLink:
+    # ensure community exists
+    result = await session.exec(select(Community).where(Community.id == community_id))
+    community = result.first()
+    if not community:
+        raise ValueError("Community not found")
 
-def link_course_to_community(course_id: str, community_id: str, db: Session):
-    link = CommunityCourseLink(course_id=course_id, community_id=community_id)
-    db.add(link)
-    db.commit()
-    db.refresh(link)
+    # ensure course exists
+    result = await session.exec(select(Course).where(Course.id == course_id))
+    course = result.first()
+    if not course:
+        raise ValueError("Course not found")
+
+    # prevent duplicates
+    result = await session.exec(
+        select(CommunityCourseLink).where(
+            CommunityCourseLink.community_id == community_id,
+            CommunityCourseLink.course_id == course_id
+        )
+    )
+    existing = result.first()
+    if existing:
+        return existing
+
+    link = CommunityCourseLink(community_id=community_id, course_id=course_id)
+    session.add(link)
+    await session.commit()
+    await session.refresh(link)
     return link
 
-
-def unlink_course_from_community(course_id: str, community_id: str, db: Session):
-    statement = select(CommunityCourseLink).where(
-        CommunityCourseLink.course_id == course_id,
-        CommunityCourseLink.community_id == community_id
+# remove course from community
+async def remove_course_from_community(session: AsyncSession, community_id: str, course_id: str) -> None:
+    result = await session.exec(
+        select(CommunityCourseLink).where(
+            CommunityCourseLink.community_id == community_id,
+            CommunityCourseLink.course_id == course_id
+        )
     )
-    link = db.exec(statement).first()
-    if link:
-        db.delete(link)
-        db.commit()
-    return link
+    link = result.first()
+    if not link:
+        raise ValueError("Link not found")
+    await session.delete(link)
+    await session.commit()
 
-
-def list_courses_for_community(community_id: str, db: Session):
-    statement = select(Course).join(CommunityCourseLink).where(
-        CommunityCourseLink.community_id == community_id
+# list courses in a community
+async def list_courses_in_community(session: AsyncSession, community_id: str):
+    result = await session.exec(
+        select(CommunityCourseLink).where(CommunityCourseLink.community_id == community_id)
     )
-    return db.exec(statement).all()
+    return result.all()
 
-
-def list_communities_for_course(course_id: str, db: Session):
-    statement = select(Community).join(CommunityCourseLink).where(
-        CommunityCourseLink.course_id == course_id
+# list communities a course belongs to
+async def list_communities_for_course(session: AsyncSession, course_id: str):
+    result = await session.exec(
+        select(CommunityCourseLink).where(CommunityCourseLink.course_id == course_id)
     )
-    return db.exec(statement).all()
+    return result.all()

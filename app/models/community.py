@@ -65,6 +65,7 @@ class Community(SQLModel, table=True):
 
     members: List["Membership"] = Relationship(back_populates="community")
     posts: List["Post"] = Relationship(back_populates="community")
+    courses: List["CommunityCourseLink"] = Relationship(back_populates="community")
 
 
 class Membership(SQLModel, table=True):
