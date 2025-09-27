@@ -5,6 +5,9 @@ from alembic import context
 from app.models import Base  # or Base if you defined Base
 from alembic.autogenerate import renderers
 from sqlmodel.sql.sqltypes import AutoString
+from dotenv import load_dotenv
+
+load_dotenv()
 
 @renderers.dispatch_for(AutoString)
 def render_autostring(type_, autogen_context):
