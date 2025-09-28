@@ -1,3 +1,15 @@
+### Using alembic to connect a new database on render
+1. Create postgres database on render and get the details
+2. update the details in your local .env
+3. connect the database external url locally to make changes to the db from your local machine
+3b.Point your .env / settings to the new Render DB URL.
+4. Run this to stamp the new DB as empty but synced:
+    "alembic stamp head" -- This will insert a row in the new DB’s alembic_version table without running migrations.
+5. Then re-run:
+    "alembic upgrade head" -- That will apply all migrations from scratch on the new DB.
+
+
+
 ## API Endpoint Specifications
 
 ### Week 1 — Onboarding & Auth Module
