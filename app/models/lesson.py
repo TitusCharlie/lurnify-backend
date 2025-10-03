@@ -15,7 +15,7 @@
 
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, UTC
 import uuid
 
 def generate_uuid() -> str:
@@ -31,8 +31,8 @@ class Lesson(SQLModel, table=True):
     module_id: str = Field(foreign_key="module.id")
     creator_id: str = Field(foreign_key="user.id")
 
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
 
 #     module: Optional["Module"] = Relationship(back_populates="lessons")
 

@@ -29,15 +29,15 @@ def publish_course(course_id: str, current_user_id: str, db: Session) -> Optiona
 def get_course(course_id: str, db: Session) -> Optional[Course]:
     return db.get(Course, course_id)
 
-def list_courses(db: Session, creator_id: str = None, only_published: bool = True) -> List[Course]:
+def list_courses(db: Session, author_id: str = None, only_published: bool = True) -> List[Course]:
     query = select(Course)
     
     if only_published:
         query = query.where(Course.is_published == True)
     
-    if creator_id:
+    if author_id:
         # creator can see all (ignore published filter if they own it)
-        query = select(Course).where(Course.creator_id == creator_id)
+        query = select(Course).where(Course.author_id == author_id)
     
     return db.exec(query).all()
 

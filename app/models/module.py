@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Optional, List
 from sqlmodel import Field, Relationship, SQLModel
 import uuid
@@ -15,8 +15,8 @@ class Module(SQLModel, table=True):
 
     course_id: str = Field(foreign_key="course.id")
 
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
 
 #     course: Optional["Course"] = Relationship(back_populates="modules")
 #     lessons: List["Lesson"] = Relationship(back_populates="module")
