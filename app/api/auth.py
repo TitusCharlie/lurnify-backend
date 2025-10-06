@@ -4,6 +4,7 @@ from app.models.user import User
 from app.schemas.auth import SignupRequest, AuthResponse, UserLogin
 from app.services.auth import signup_user, login_user
 from app.core.database import get_session
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(
     prefix="/auth",
@@ -17,9 +18,14 @@ def signup(data: SignupRequest, db: Session = Depends(get_session)):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+# @router.post("/login", response_model=AuthResponse)
+# def login(data: UserLogin, db: Session = Depends(get_session)):
+#     return login_user(data, db)
+
 @router.post("/login", response_model=AuthResponse)
-def login(data: UserLogin, db: Session = Depends(get_session)):
-    return login_user(data, db)
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_session)):
+    data = {"email": form_data.username, "password": form_data.password}
+    return login_user(UserLogin(**data), db)
 
 # @router.post("/login", response_model=AuthResponse)
 # def login(data: UserLogin, db: Session = Depends(get_session)):
