@@ -6,6 +6,13 @@ alembic upgrade head
 
 echo "Starting app..."
 
+# Upgrade pip & reinstall bcrypt cleanly
+pip install --upgrade pip
+pip install --force-reinstall --no-cache-dir bcrypt==4.1.2
+
+# Install dependencies
+pip install -r requirements.txt
+
 # start.sh
 set -o errexit
 set -o pipefail
