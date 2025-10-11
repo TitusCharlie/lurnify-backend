@@ -45,36 +45,7 @@ def signup_user(data: SignupRequest, db: Session) -> AuthResponse:
     )
 
 
-# def login_user(data: UserLogin, db: Session) -> AuthResponse:
-#     user = db.exec(select(User).where(User.email == data.email)).first()
-
-#     if not user or not user.hashed_password:
-#         raise HTTPException(status_code=401, detail="Invalid credentials")
-
-#     if not verify_password(data.password, user.hashed_password):
-#         raise HTTPException(status_code=401, detail="Incorrect password")
-
-#     token = create_access_token({"sub": user.id})
-
-#     return AuthResponse(
-#         access_token=token,
-#         token_type="bearer", 
-#         user=UserRead.model_validate(user)
-#     )
-
 def login_user(data: UserLogin, db: Session) -> AuthResponse:
-    # --- Temporary bcrypt check (to debug Render issue) ---
-    from passlib.context import CryptContext
-    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-    import bcrypt
-    try:
-        version = getattr(bcrypt, "__about__", None)
-        print("✅ Using bcrypt:", version or "missing __about__")
-    except Exception as e:
-        print("⚠️ bcrypt check failed:", e)
-    # ------------------------------------------------------
-
     user = db.exec(select(User).where(User.email == data.email)).first()
 
     if not user or not user.hashed_password:
@@ -90,3 +61,32 @@ def login_user(data: UserLogin, db: Session) -> AuthResponse:
         token_type="bearer", 
         user=UserRead.model_validate(user)
     )
+
+# def login_user(data: UserLogin, db: Session) -> AuthResponse:
+#     # --- Temporary bcrypt check (to debug Render issue) ---
+#     from passlib.context import CryptContext
+#     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+#     import bcrypt
+#     try:
+#         version = getattr(bcrypt, "__about__", None)
+#         print("✅ Using bcrypt:", version or "missing __about__")
+#     except Exception as e:
+#         print("⚠️ bcrypt check failed:", e)
+#     # ------------------------------------------------------
+
+#     user = db.exec(select(User).where(User.email == data.email)).first()
+
+#     if not user or not user.hashed_password:
+#         raise HTTPException(status_code=401, detail="Invalid credentials")
+
+#     if not verify_password(data.password, user.hashed_password):
+#         raise HTTPException(status_code=401, detail="Incorrect password")
+
+#     token = create_access_token({"sub": user.id})
+
+#     return AuthResponse(
+#         access_token=token,
+#         token_type="bearer", 
+#         user=UserRead.model_validate(user)
+#     )
