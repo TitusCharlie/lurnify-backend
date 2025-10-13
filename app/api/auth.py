@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+# api/auth.py
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from app.models.user import User
 from app.schemas.auth import SignupRequest, AuthResponse, UserLogin
@@ -18,14 +19,35 @@ def signup(data: SignupRequest, db: Session = Depends(get_session)):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("/login", response_model=AuthResponse)
-def login(data: UserLogin, db: Session = Depends(get_session)):
-    return login_user(data, db)
-
 # @router.post("/login", response_model=AuthResponse)
-# def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_session)):
-#     data = {"email": form_data.username, "password": form_data.password}
-#     return login_user(UserLogin(**data), db)
+# def login(data: UserLogin, db: Session = Depends(get_session)):
+#     return login_user(data, db)
+
+# -------------------------
+# LOGIN ROUTE (HYBRID)
+# -------------------------
+@router.post("/login", response_model=AuthResponse)
+def login(
+    db: Session = Depends(get_session),
+    form_data: OAuth2PasswordRequestForm = Depends(None),
+    json_data: UserLogin | None = None
+):
+    """
+    Login either via:
+    - Swagger UI (form-data, using username/password)
+    - Frontend (JSON: { "email": "...", "password": "..." })
+    """
+    # Swagger login (form)
+    if form_data:
+        json_data = UserLogin(email=form_data.username, password=form_data.password)
+
+    if not json_data:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Missing credentials"
+        )
+
+    return login_user(json_data, db)
 
 # @router.post("/login", response_model=AuthResponse)
 # def login(data: UserLogin, db: Session = Depends(get_session)):
