@@ -71,7 +71,7 @@ from app.schemas.auth import UserLogin, AuthResponse
 from app.core.security import (
     hash_password,
     verify_password,
-    create_access_token,
+    jwt_service
 )
 import uuid
 from app.services.wallet import generate_wallet_address  # implement below
@@ -96,7 +96,7 @@ def signup_user(data: UserCreate, db: Session) -> AuthResponse:
     db.commit()
     db.refresh(new_user)
 
-    token = create_access_token({"sub": str(new_user.id), "email": new_user.email})
+    token = jwt_service.create_access_token({"sub": str(new_user.id), "email": new_user.email})
 
     return AuthResponse(
         access_token=token,
@@ -109,9 +109,9 @@ def login_user(data: UserLogin, db: Session) -> AuthResponse:
     if not user or not verify_password(data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    token = create_access_token({"sub": str(user.id), "email": user.email})
+    token = jwt_service.create_access_token({"sub": str(user.id), "email": user.email})
 
     return AuthResponse(
         access_token=token,
-        user=UserRead.from_orm(user)
+        user=UserRead.model_validate(user)
     )
