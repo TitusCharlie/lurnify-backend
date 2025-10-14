@@ -66,7 +66,8 @@
 from fastapi import HTTPException
 from sqlmodel import Session, select
 from app.models.user import User
-from app.schemas.user import UserCreate, UserLogin, AuthResponse, UserRead
+from app.schemas.user import UserCreate, UserRead
+from app.schemas.auth import UserLogin, AuthResponse
 from app.core.security import (
     hash_password,
     verify_password,
