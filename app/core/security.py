@@ -74,7 +74,7 @@
 #     except JWTError:
 #         raise credentials_exception
 
-from datetime import datetime, timedelta, now
+from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from fastapi import HTTPException, Depends
